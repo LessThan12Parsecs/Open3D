@@ -45,6 +45,7 @@ option(USE_SYSTEM_TINYOBJLOADER   "Use system pre-installed tinyobjloader"   OFF
 option(BUILD_FILAMENT_FROM_SOURCE "Build filament from source"               OFF)
 option(PREFER_OSX_HOMEBREW        "Prefer Homebrew libs over frameworks"     ON )
 option(WITH_FAISS                 "Enable Faiss"                             ON )
+option(WITH_PROFILEING            "Enable profiling (will be a bit slower)"  ON )
 
 # Sensor options
 option(BUILD_LIBREALSENSE         "Build support for Intel RealSense camera" OFF)
@@ -61,6 +62,16 @@ option(DEVELOPER_BUILD      "Add +commit_hash to the project version number" ON 
 # downloading it from the internet. The files inside OPEN3D_THIRD_PARTY_DOWNLOAD_DIR
 # are prepared manually by the user. This is only supported by limited 3rd party
 # libraries.
+
+if(WITH_PROFILEING)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        message(FATAL_ERROR "-pg flag only supports GCC.")
+    endif()
+    # Global flags for profiling. GCC only.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pg")
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -pg")
+endif()
 
 find_program(CCACHE "ccache")
 if (CCACHE)
